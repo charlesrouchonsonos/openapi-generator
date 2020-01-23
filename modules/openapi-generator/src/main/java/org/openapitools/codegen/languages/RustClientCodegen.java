@@ -42,6 +42,8 @@ public class RustClientCodegen extends DefaultCodegen implements CodegenConfig {
     public static final String HYPER_LIBRARY = "hyper";
     public static final String REQWEST_LIBRARY = "reqwest";
 
+    public static final String REQWEST_IS_SEND_SYNC = "reqwestIsSendSync";
+
     protected String packageName = "openapi";
     protected String packageVersion = "1.0.0";
     protected String apiDocPath = "docs/";
@@ -244,6 +246,12 @@ public class RustClientCodegen extends DefaultCodegen implements CodegenConfig {
 
         additionalProperties.put("apiDocPath", apiDocPath);
         additionalProperties.put("modelDocPath", modelDocPath);
+
+        if (additionalProperties.containsKey(REQWEST_IS_SEND_SYNC)) {
+            additionalProperties.put(REQWEST_IS_SEND_SYNC, "true");
+        } else {
+            additionalProperties.put(REQWEST_IS_SEND_SYNC, "false");
+        }
 
         if ( HYPER_LIBRARY.equals(getLibrary())){
             additionalProperties.put(HYPER_LIBRARY, "true");

@@ -1,26 +1,47 @@
 {{>partial_header}}
-use std::rc::Rc;
 use std::borrow::Borrow;
 #[allow(unused_imports)]
 use std::option::Option;
+{{#reqwestIsSendSync}}
+use std::sync::Arc;
+{{/reqwestIsSendSync}}
+{{^reqwestIsSendSync}}
+use std::rc::Rc;
+{{/reqwestIsSendSync}}
 
 use reqwest;
 
 use super::{Error, configuration};
 
 pub struct {{{classname}}}Client {
+    {{#reqwestIsSendSync}}
+    configuration: Arc<configuration::Configuration>,
+    {{/reqwestIsSendSync}}
+    {{^reqwestIsSendSync}}
     configuration: Rc<configuration::Configuration>,
+    {{/reqwestIsSendSync}}
 }
 
 impl {{{classname}}}Client {
-    pub fn new(configuration: Rc<configuration::Configuration>) -> {{{classname}}}Client {
+    {{#reqwestIsSendSync}}
+
+    pub fn new(configuration: Arc<configuration::Configuration>) -> {{{classname}}}Client {
         {{{classname}}}Client {
             configuration,
         }
     }
+    {{/reqwestIsSendSync}}
+    {{^reqwestIsSendSync}}
+
+        pub fn new(configuration: Rc<configuration::Configuration>) -> {{{classname}}}Client {
+        {{{classname}}}Client {
+        configuration,
+        }
+        }
+    {{/reqwestIsSendSync}}
 }
 
-pub trait {{{classname}}} {
+pub trait {{{classname}}}: Send + Sync {
 {{#operations}}
 {{#operation}}
     fn {{{operationId}}}(&self, {{#allParams}}{{{paramName}}}: {{^required}}Option<{{/required}}{{#required}}{{#isNullable}}Option<{{/isNullable}}{{/required}}{{#isString}}&str{{/isString}}{{#isUuid}}&str{{/isUuid}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}crate::models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> Result<{{^returnType}}(){{/returnType}}{{#returnType}}{{{returnType}}}{{/returnType}}, Error>;
